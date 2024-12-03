@@ -2,17 +2,13 @@ using GigApp.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
-string connectionString = "Host=my_host;Username=my_user;Password=my_pw;Database=my_db";
+// string connectionString = "Host=my_host;Username=my_user;Password=my_pw;Database=my_db";
 
 builder.Services.AddControllers();
 builder.Services.AddOpenApiDocument();
 builder.Services.AddDbContext<ApplicationDbContext>();
-// builder.Services.AddDataProtection();
-IConfigurationRoot config = new ConfigurationBuilder()
-    .AddJsonFile("appsettings.json")
-    .AddEnvironmnetVariables()
-    .Build()
 
+// builder.Services.AddDataProtection();
 
 var app = builder.Build();
 
@@ -27,5 +23,13 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+
+IConfigurationRoot config = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
+
+ConnectionStrings? connectionStrings = config
+    .GetSection("ConnectionStrings")
+    .Get<ConnectionStrings>();
+
+var defaultConnection = connectionStrings?.DefaultConnection;
 
 app.Run();
