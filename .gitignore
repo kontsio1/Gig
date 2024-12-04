@@ -3,6 +3,7 @@
 *.dex
 *.class
 **/bin/
+**/obj/
 **/gen/
 .gradle/
 build/
