@@ -46,3 +46,4 @@ D:\Users\Kontsion\Desktop\brain js projects\GigApp\bin\Debug\net9.0\NSwag.Core.Y
 D:\Users\Kontsion\Desktop\brain js projects\GigApp\bin\Debug\net9.0\NSwag.Generation.dll
 D:\Users\Kontsion\Desktop\brain js projects\GigApp\bin\Debug\net9.0\NSwag.Generation.AspNetCore.dll
 D:\Users\Kontsion\Desktop\brain js projects\GigApp\bin\Debug\net9.0\YamlDotNet.dll
+D:\Users\Kontsion\Desktop\brain js projects\GigApp\obj\Debug\net9.0\GigApp.sourcelink.json

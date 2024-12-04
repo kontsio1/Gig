@@ -1,5 +1,0 @@
-public class ConnectionStrings
-{
-    public const string SectionName = "ConnectionStrings";
-    public const string DefaultConnection {get; set;}
-}
