@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("GigApp")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+56296e35d7bff69f31bf8145fc4611b3c94b75b9")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+a0f42b7e25eb3a70c85ed587c843d01f1dd206c5")]
 [assembly: System.Reflection.AssemblyProductAttribute("GigApp")]
 [assembly: System.Reflection.AssemblyTitleAttribute("GigApp")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

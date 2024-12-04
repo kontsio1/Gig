@@ -1,8 +1,8 @@
-namespace GigApp.Models
+namespace GigApp.Application
 {
     public class ConnectionStrings
     {
-        public string SectionName = "ConnectionStrings";
+        public const string SectionName = "ConnectionStrings";
         public string DefaultConnection { get; set; }
     }
 }
