@@ -11,33 +11,26 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddOpenApiDocument();
 
-var config = builder.Configuration;
-var connectionString = config.GetConnectionString("DefaultConnection");
+IConfigurationRoot appConfig = new ConfigurationBuilder() //this is builder.Configuration
+    .AddJsonFile("appsettings.json")
+    .AddEnvironmentVariables()
+    .AddCommandLine(args) //ex dotnet run --environment=dev
+    .AddUserSecrets<Program>()
+    .Build();
 
-// var optionBuilder = new DbContextOptionsBuilder<ApplicationDbContext>();
-// optionBuilder.UseNpgsql(connectionString, x => x.MigrationsHistoryTable("_EfMigrations"));
+// builder.Services.Configure<ConnectionStrings>(o =>
+//     builder.Configuration.GetSection(ConnectionStrings.SectionName).Bind(o)
+// );
+// for full view of IConfig providers use appConfig.GetDebugView().ToString();
 
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseNpgsql(connectionString, x => x.MigrationsHistoryTable("_EfMigrations"))
+var optionBuilder = new DbContextOptionsBuilder<ApplicationDbContext>(); //this is builder.Services.AddDbContext<ApplicationDbContext
+optionBuilder.UseNpgsql(
+    builder.Configuration.GetConnectionString("DefaultConnection"),
+    x => x.MigrationsHistoryTable("_EfMigrations")
 );
 
 // builder.Services.AddDataProtection();
 
-//alt2
-// builder.Services.Configure<ConnectionStrings>(
-//     builder.Configuration.GetSection(ConnectionStrings.SectionName)
-// );
-
-//alt1
-// IConfigurationRoot config = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
-
-// ConnectionStrings? connectionStrings = config
-//     .GetSection("ConnectionStrings")
-//     .Get<ConnectionStrings>();
-
-// var defaultConnection = connectionStrings?.DefaultConnection;
-
-//after
 // builder.Services.AddScoped<IMyDependency, MyDependency>();
 
 var app = builder.Build();
