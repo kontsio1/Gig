@@ -1,11 +1,7 @@
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Threading.Tasks;
 
-namespace GigApp.Models
+namespace GigApp.Models.Users
 {
     public class User
     {
@@ -16,5 +12,7 @@ namespace GigApp.Models
         public string Name { get; set; } = null!;
        [Required(ErrorMessage = "Password cannot be empty")]
         public string Password { get; set; } = null!;
+        [Required(ErrorMessage = "Email cannot be empty")]
+        public string Email { get; set; } = null!;
     }
 }

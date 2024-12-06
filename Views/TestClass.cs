@@ -1,7 +1,8 @@
 using System.Runtime.CompilerServices;
+using GigApp.Models;
 using Microsoft.Extensions.Options;
 
-namespace GigApp.Application
+namespace GigApp.Views
 {
     public class TestClass
     {
