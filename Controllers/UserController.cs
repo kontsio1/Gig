@@ -14,6 +14,6 @@ public class UserController(ILogger<UserController> logger, IMediator mediator) 
     {
         var response = await mediator.Send(request);
         logger.LogInformation("Sign up user: ${email}", request.Email);
-        return Results.Ok();
+        return response.Succeeded ? Results.Ok() : Results.BadRequest();
     }
 }
