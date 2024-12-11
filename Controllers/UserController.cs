@@ -1,4 +1,5 @@
 using GigApp.Models;
+using GigApp.Models.Users;
 using GigApp.Views.UserAdd;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;

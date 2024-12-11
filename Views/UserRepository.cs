@@ -1,6 +1,7 @@
 using GigApp.Models;
 using GigApp.Models.Users;
 using GigApp.Views.UserAdd;
+using Microsoft.EntityFrameworkCore;
 
 namespace GigApp.Views;
 
@@ -24,5 +25,9 @@ public class UserRepository(ApplicationDbContext context) : IUserRepository
         {
             return Result.Failure(e.Message);
         }
+    }
+    public async Task<User> GetUserByEmail(string email)
+    {
+        return await context.Users.Where(x => x.Email == email).FirstAsync();
     }
 }

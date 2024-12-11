@@ -5,4 +5,5 @@ namespace GigApp.Models.Users;
 public interface IUserRepository
 {
     Task<Result> RegisterNewUser(UserAddRequest request);
+    Task<User> GetUserByEmail(string email);
 }
