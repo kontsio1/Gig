@@ -9,6 +9,7 @@ public class Gig
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public Guid Id { get; set; }
     public string Name { get; set; } = null!;
+    public string Description { get; set; }
     public string Address { get; set; } = null!;
-    public string Date { get; set; } = null!;
+    public DateTimeOffset Date { get; set; }
 }
