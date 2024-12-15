@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace GigApp.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20241211231417_AddedGigsAndUsersMapping")]
-    partial class AddedGigsAndUsersMapping
+    [Migration("20241215222318_AddedGigsAndMappings")]
+    partial class AddedGigsAndMappings
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -35,7 +35,10 @@ namespace GigApp.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("Date")
+                    b.Property<DateTimeOffset>("Date")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("text");
 
