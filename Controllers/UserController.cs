@@ -11,7 +11,7 @@ namespace GigApp.Controllers;
 [Route("[controller]")]
 public class UserController(ILogger<UserController> logger, IMediator mediator) : ControllerBase
 {
-    [HttpPost(Name = "SignUp")]
+    [HttpPost("SignUp")]
     public async Task<IResult> SignUp(UserAddRequest request)
     {
         var response = await mediator.Send(request);
@@ -19,7 +19,7 @@ public class UserController(ILogger<UserController> logger, IMediator mediator) 
         return response.Succeeded ? Results.Ok() : Results.BadRequest();
     }
 
-    [HttpPost(Name = "Login")]
+    [HttpPost("Login")]
     public async Task<IResult> Login(UserLoginRequest request)
     {
         var response = await mediator.Send(request);

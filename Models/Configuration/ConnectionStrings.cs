@@ -1,4 +1,4 @@
-namespace GigApp.Models
+namespace GigApp.Models.Configuration
 {
     public class ConnectionStrings
     {
