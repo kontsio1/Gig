@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using GigApp.Models;
+using GigApp.Models.Gigs;
 using GigApp.Models.Users;
 using MediatR;
 

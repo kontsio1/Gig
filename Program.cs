@@ -2,6 +2,7 @@ using System.Reflection;
 using System.Text;
 using GigApp.Models;
 using GigApp.Models.Configuration;
+using GigApp.Models.Gigs;
 using GigApp.Models.Users;
 using GigApp.Views;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -63,6 +64,7 @@ public class Program
     private static void ConfigureRepositories(IServiceCollection services)
     {
         services.AddScoped<IUserRepository, UserRepository>();
+        services.AddScoped<IGigRepository, GigRepository>();
     }
 
     private static void ConfigureConfiguration(
