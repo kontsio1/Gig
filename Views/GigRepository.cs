@@ -30,6 +30,11 @@ public class GigRepository(ApplicationDbContext context) : IGigRepository
 
     public async Task<GigDto[]> GetGigs(GigsGetRequest request)
     {
+        bool hasFilteredDate = request.Date.HasValue;
+        DateTimeOffset selectedDate = hasFilteredDate
+            ? (DateTimeOffset)request.Date
+            : new DateTimeOffset();
+
         var gigs = await context
             .Gigs.Select(g => new GigDto
             {
@@ -38,6 +43,7 @@ public class GigRepository(ApplicationDbContext context) : IGigRepository
                 Date = g.Date,
                 Address = g.Address,
             })
+            .Where(g => hasFilteredDate ? g.Date.Date == selectedDate.Date : true)
             .ToArrayAsync();
         return gigs;
     }
