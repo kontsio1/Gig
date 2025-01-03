@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using static GigApp.Models.Configuration.AmazonSecretsManagerConfigurationProvider;
 
 public class Program
 {
@@ -32,6 +33,10 @@ public class Program
     )
     {
         services.AddControllers();
+        builder.Configuration.AddAmazonSecretsManager(
+            "eu-west-2",
+            "rds!db-7df55b32-8001-4b69-b8d4-7f54a6c4f7e6"
+        );
         services.AddOpenApiDocument();
         ConfigureMediatR(services);
         ConfigureRepositories(services);
@@ -75,6 +80,7 @@ public class Program
         services.Configure<JwtSettings>(o =>
             builder.Configuration.GetSection(JwtSettings.SectionName).Bind(o)
         );
+        builder.Services.Configure<MyCustomSecret>(builder.Configuration);
         // for full view of IConfig providers use appConfig.GetDebugView().ToString();
     }
 
@@ -125,5 +131,18 @@ public class Program
         app.UseAuthorization();
 
         app.MapControllers();
+    }
+}
+
+public static class ConfigurationExtensions
+{
+    public static void AddAmazonSecretsManager(
+        this IConfigurationBuilder configurationBuilder,
+        string region,
+        string secretName
+    )
+    {
+        var configurationSource = new AmazonSecretsManagerConfigurationSource(region, secretName);
+        configurationBuilder.Add(configurationSource);
     }
 }
