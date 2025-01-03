@@ -20,7 +20,25 @@ public class AmazonSecretsManagerConfigurationProvider : ConfigurationProvider
     {
         var secret = GetSecret();
 
-        Data = JsonSerializer.Deserialize<Dictionary<string, string>>(secret);
+        var secretData = JsonSerializer.Deserialize<Dictionary<string, string>>(secret);
+
+        if (secretData != null)
+        {
+            Data = secretData;
+
+            // If the secret matches the structure of MyCustomSecret, construct the connection string
+            if (secretData.ContainsKey("username") && secretData.ContainsKey("password"))
+            {
+                string username = secretData["username"];
+                string password = secretData["password"];
+
+                string connectionString =
+                    $"Host=gig-database.czam44y242j3.eu-west-2.rds.amazonaws.com;Port=5432;Database=postgres;Username={username};Password={password};Trust Server Certificate=true;";
+
+                // Add the constructed connection string to the Data dictionary
+                Data["DBConnectionString"] = connectionString;
+            }
+        }
     }
 
     private string GetSecret()

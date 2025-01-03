@@ -19,7 +19,7 @@ public class Program
 
         ConfigureDatabaseContext(builder);
         ConfigureServices(builder, builder.Services);
-
+        // var sth = builder.Configuration["DBConnectionString"];
         var app = builder.Build();
 
         ConfigurePipeline(app);
@@ -51,7 +51,7 @@ public class Program
             (_, optionBuilder) =>
             {
                 optionBuilder.UseNpgsql(
-                    builder.Configuration.GetConnectionString("DefaultConnection"),
+                    builder.Configuration["DBConnectionString"],
                     x => x.MigrationsHistoryTable("_EfMigrations")
                 );
             }

@@ -10,7 +10,7 @@ public class GetGigsHandler(IGigRepository gigRepository, IOptions<MyCustomSecre
 {
     public async Task<GigDto[]> Handle(GigsGetRequest request, CancellationToken cancellationToken)
     {
-        var sth = myCustomScret.Value;
+        // var sth = myCustomScret.Value;
         return await gigRepository.GetGigs(request);
     }
 }
