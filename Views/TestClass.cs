@@ -1,5 +1,5 @@
 using System.Runtime.CompilerServices;
-using GigApp.Models;
+using GigApp.Models.Configuration;
 using Microsoft.Extensions.Options;
 
 namespace GigApp.Views

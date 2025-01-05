@@ -1,50 +1,148 @@
 using System.Reflection;
-using System.Security.Cryptography;
+using System.Text;
 using GigApp.Models;
+using GigApp.Models.Configuration;
+using GigApp.Models.Gigs;
 using GigApp.Models.Users;
 using GigApp.Views;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
+using static GigApp.Models.Configuration.AmazonSecretsManagerConfigurationProvider;
 
-var builder = WebApplication.CreateBuilder(args);
-
-builder.Services.AddControllers();
-builder.Services.AddOpenApiDocument();
-
-IConfigurationRoot appConfig = new ConfigurationBuilder() //this is builder.Configuration
-    .AddJsonFile("appsettings.json")
-    .AddEnvironmentVariables()
-    .AddCommandLine(args) //ex dotnet run --environment=dev
-    .AddUserSecrets<Program>()
-    .Build();
-
-builder.Services.AddDbContext<ApplicationDbContext>((_, optionBuilder) =>
+public class Program
 {
-    optionBuilder.UseNpgsql(
-        builder.Configuration.GetConnectionString("DefaultConnection"),
-        x => x.MigrationsHistoryTable("_EfMigrations"));
-});
-builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
-builder.Services.AddScoped<IUserRepository, UserRepository>();
+    public static void Main(string[] args)
+    {
+        var builder = WebApplication.CreateBuilder(args);
 
-// builder.Services.AddDataProtection();
-// builder.Services.Configure<ConnectionStrings>(o =>
-//     builder.Configuration.GetSection(ConnectionStrings.SectionName).Bind(o)
-// );
-// for full view of IConfig providers use appConfig.GetDebugView().ToString();
+        ConfigureDatabaseContext(builder);
+        ConfigureServices(builder, builder.Services);
+        // var sth = builder.Configuration["DBConnectionString"];
+        var app = builder.Build();
 
-var app = builder.Build();
+        ConfigurePipeline(app);
 
-if (app.Environment.IsDevelopment())
-{
-    app.UseOpenApi();
-    app.UseSwaggerUi();
+        app.Run();
+    }
+
+    private static void ConfigureServices(
+        WebApplicationBuilder builder,
+        IServiceCollection services
+    )
+    {
+        services.AddControllers();
+        builder.Configuration.AddAmazonSecretsManager(
+            "eu-west-2",
+            "rds!db-7df55b32-8001-4b69-b8d4-7f54a6c4f7e6"
+        );
+        services.AddOpenApiDocument();
+        ConfigureMediatR(services);
+        ConfigureRepositories(services);
+        ConfigureConfiguration(services, builder);
+        ConfigureAuthentication(services, builder);
+        services.AddAuthorization();
+    }
+
+    private static void ConfigureDatabaseContext(WebApplicationBuilder builder)
+    {
+        builder.Services.AddDbContext<ApplicationDbContext>(
+            (_, optionBuilder) =>
+            {
+                optionBuilder.UseNpgsql(
+                    builder.Configuration["DBConnectionString"],
+                    x => x.MigrationsHistoryTable("_EfMigrations")
+                );
+            }
+        );
+        // builder.Services.AddDataProtection();
+    }
+
+    private static void ConfigureMediatR(IServiceCollection services)
+    {
+        services.AddMediatR(cfg =>
+            cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly())
+        );
+    }
+
+    private static void ConfigureRepositories(IServiceCollection services)
+    {
+        services.AddScoped<IUserRepository, UserRepository>();
+        services.AddScoped<IGigRepository, GigRepository>();
+    }
+
+    private static void ConfigureConfiguration(
+        IServiceCollection services,
+        WebApplicationBuilder builder
+    )
+    {
+        services.Configure<JwtSettings>(o =>
+            builder.Configuration.GetSection(JwtSettings.SectionName).Bind(o)
+        );
+        builder.Services.Configure<MyCustomSecret>(builder.Configuration);
+        // for full view of IConfig providers use appConfig.GetDebugView().ToString();
+    }
+
+    private static void ConfigureAuthentication(
+        IServiceCollection services,
+        WebApplicationBuilder builder
+    )
+    {
+        services
+            .AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(options =>
+            {
+                var jwtConfig = builder
+                    .Configuration.GetSection(JwtSettings.SectionName)
+                    .Get<JwtSettings>();
+
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidIssuer = jwtConfig.Issuer,
+                    ValidAudience = jwtConfig.Audience,
+                    IssuerSigningKey = new SymmetricSecurityKey(
+                        Encoding.UTF8.GetBytes(jwtConfig.Key)
+                    ),
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                };
+            });
+    }
+
+    private static void ConfigurePipeline(WebApplication app)
+    {
+        if (app.Environment.IsDevelopment())
+        {
+            app.UseOpenApi();
+            app.UseSwaggerUi();
+        }
+        //order bellow matters
+        app.UseHttpsRedirection();
+
+        app.UseAuthentication();
+        app.UseAuthorization();
+
+        app.MapControllers();
+    }
 }
 
-app.UseHttpsRedirection();
-
-app.UseAuthorization();
-
-app.MapControllers();
-
-app.Run();
+public static class ConfigurationExtensions
+{
+    public static void AddAmazonSecretsManager(
+        this IConfigurationBuilder configurationBuilder,
+        string region,
+        string secretName
+    )
+    {
+        var configurationSource = new AmazonSecretsManagerConfigurationSource(region, secretName);
+        configurationBuilder.Add(configurationSource);
+    }
+}

@@ -13,5 +13,7 @@ namespace GigApp.Models
             : base(options) { }
 
         public DbSet<User> Users { get; set; }
+        public DbSet<Gig> Gigs { get; set; }
+        public DbSet<UserGig> UserGigs { get; set; }
     }
 }
